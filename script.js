@@ -1,4 +1,4 @@
-/*** CHEQ Traffic Quality Dashboard */
+/*** CHEQ Traffic Quality Dashboard ***/
 
 // Configuration
 const CONFIG = {
