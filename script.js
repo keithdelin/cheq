@@ -7,6 +7,7 @@
 const CONFIG = {
     // CSV data source
     DATA_URL: 'https://cheq.free.nf/sample-traffic-data.csv',
+    //DATA_URL: 'assets/sample-traffic-data.csv',
 };
 
 // State
@@ -24,11 +25,12 @@ let filteredData = [];
  */
 async function fetchTrafficData() {
     try {
-        console.log('Fetching traffic data from CSV...');
+        console.log('Fetching traffic data from CSV from ' + CONFIG.DATA_URL);
         
-        // TODO: Implement CSV fetch and parse
-        // const response = await fetch(CONFIG.DATA_URL);
-        // const csvText = await response.text();
+        // CSV fetch and parse
+        const response = await fetch(CONFIG.DATA_URL);
+        console.log('response', response)
+        //const csvText = await response.text();
         // Parse CSV into array of objects with proper column names
         
         // REMOVE THIS - Mock data for testing structure only
