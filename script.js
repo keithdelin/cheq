@@ -3,8 +3,8 @@
 // Configuration
 const CONFIG = {
     // CSV data source
-    DATA_URL: 'https://cheq.free.nf/sample-traffic-data.csv',
-    //DATA_URL: 'assets/sample-traffic-data.csv',
+    //DATA_URL: 'https://cheq.free.nf/sample-traffic-data.csv',
+    DATA_URL: 'assets/sample-traffic-data.csv',
 };
 
 // State
