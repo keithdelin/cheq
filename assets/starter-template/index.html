@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHEQ Traffic Quality Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <h1>🛡️ CHEQ Traffic Quality Dashboard</h1>
+                <p>Bot Detection & Fraud Analysis</p>
+            </div>
+            <div class="header-actions">
+                <button id="refreshBtn" class="btn-primary">🔄 Refresh Data</button>
+            </div>
+        </header>
+
+        <!-- Metrics Cards -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Sessions</div>
+                <div class="metric-value" id="totalSessions">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Bot Detection Rate</div>
+                <div class="metric-value" id="botRate">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Avg Risk Score</div>
+                <div class="metric-value" id="avgRisk">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Clean Form Submissions</div>
+                <div class="metric-value" id="cleanForms">-</div>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters">
+            <div class="filter-group">
+                <label>Risk Level:</label>
+                <select id="riskFilter">
+                    <option value="all">All Traffic</option>
+                    <option value="clean">Clean</option>
+                    <option value="suspicious">Suspicious</option>
+                    <option value="bot">Bot</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Country:</label>
+                <select id="countryFilter">
+                    <option value="all">All Countries</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Charts -->
+        <section class="charts-grid">
+            <div class="chart-container">
+                <h3>Traffic by Country</h3>
+                <canvas id="countryChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Device Distribution</h3>
+                <canvas id="deviceChart"></canvas>
+            </div>
+        </section>
+
+        <!-- High Risk Sessions Table -->
+        <section class="table-section">
+            <h3>High-Risk Sessions</h3>
+            <div class="table-wrapper">
+                <table id="riskTable">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>IP Address</th>
+                            <th>Country</th>
+                            <th>Risk Score</th>
+                            <th>Classification</th>
+                            <th>Flags</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 20px;">
+                                Loading data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>CHEQ.ai Technical Assignment - Traffic Quality Dashboard</p>
+        </footer>
+    </div>
+
+    <!-- Optional: PapaParse for easy CSV parsing -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script> -->
+    
+    <!-- Optional: Chart.js for visualizations -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    
+    <script src="script.js"></script>
+</body>
+</html>
+
