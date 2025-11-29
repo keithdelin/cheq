@@ -1,6 +1,4 @@
-/**
- * CHEQ Traffic Quality Dashboard
- */
+/*** CHEQ Traffic Quality Dashboard */
 
 // Configuration
 const CONFIG = {
@@ -10,8 +8,11 @@ const CONFIG = {
 };
 
 // State
-let trafficData;
+let trafficData = [];
 let filteredData = [];
+let countryChart = null;
+let deviceChart = null;
+
 const botUserAgents = [
     "curl",
     "python-requests",
@@ -46,9 +47,7 @@ const MEDIUM_RISK_COUNTRIES = [
     "South Africa"
     ];
 
-/**
- Fetch and return csv data using PapaParse
- */
+/** Fetch and return csv data using PapaParse */
 async function fetchTrafficData() {
     try {
         console.log("Fetching traffic data from CSV from " + CONFIG.DATA_URL);
@@ -67,15 +66,6 @@ async function fetchTrafficData() {
             },
         });
         });
-        
-        // CSV fetch and parse
-        //const response = await fetch(CONFIG.DATA_URL);
-        //console.log('my response ', response)
-        //const csvText = await response.text();
-        // Parse CSV into array of objects with proper column names
-        
-        // REMOVE THIS - Mock data for testing structure only
-        //trafficData = generateMockData();
         
     } catch (error) {
         console.error('Error fetching traffic data:', error);
@@ -173,6 +163,9 @@ function analyzeSession(session, ipData) {
         classification = 'suspicious';
     }
     
+    // Cap Risk at 100
+    if (riskScore > 100) { riskScore = 100 };
+    
     return { riskScore, classification, flags };
 }
 
@@ -261,18 +254,15 @@ function updateCharts(data) {
     // - Consider adding: Line chart for traffic over time
     
     console.log('Charts would render here with Chart.js');
-    //const ctx = document.getElementById('countryChart');
 
-    let countryChart;
-    let deviceChart;
-    const countryCount = getCountryCount(data);
-    const deviceCount = getDeviceCount(data);
-    const c_labels = Object.keys(countryCount);
-    const c_values = Object.values(countryCount);
-    const d_labels = Object.keys(deviceCount);    // e.g. ["Desktop", "Mobile", "Tablet"]
-    const d_values = Object.values(deviceCount);  // e.g. [120, 80, 15]
-    const ctx_country = document.getElementById('countryChart').getContext('2d');
-    const ctx_device = document.getElementById('deviceChart').getContext('2d');
+    let countryCount = getCountryCount(data);
+    let deviceCount = getDeviceCount(data);
+    let c_labels = Object.keys(countryCount);
+    let c_values = Object.values(countryCount);
+    let d_labels = Object.keys(deviceCount);    // e.g. ["Desktop", "Mobile", "Tablet"]
+    let d_values = Object.values(deviceCount);  // e.g. [120, 80, 15]
+    let ctx_country = document.getElementById('countryChart').getContext('2d');
+    let ctx_device = document.getElementById('deviceChart').getContext('2d');
 
     // Destroy any old charts first
     if (countryChart) { countryChart.destroy(); }
@@ -383,10 +373,10 @@ function populateFilters(data) {
 }
 
 // Get Country Count for Pie Chart
-function getCountryCount(processedData) {
+function getCountryCount(data) {
   const countryCount = {};
 
-  processedData.forEach(session => {
+  data.forEach(session => {
     const country = (session.country || "Unknown").trim();
     if (!countryCount[country]) {
       countryCount[country] = 0;
@@ -398,10 +388,10 @@ function getCountryCount(processedData) {
 }
 
 // Get Devices for Bar Chart
-function getDeviceCount(processedData) {
+function getDeviceCount(data) {
   const deviceCount = {};
 
-  processedData.forEach(session => {
+  data.forEach(session => {
     const device = (session.device_type || "Unknown").trim();
     if (!deviceCount[device]) {
       deviceCount[device] = 0;
@@ -435,35 +425,6 @@ async function initDashboard() {
     document.getElementById('countryFilter').addEventListener('change', applyFilters);
     
     console.log('✅ Dashboard ready!');
-}
-
-/**
- * MOCK DATA GENERATOR (Remove this when implementing real CSV fetching)
- */
-function generateMockData() {
-    console.warn('Using mock data - Replace with CSV fetch from ' + CONFIG.DATA_URL);
-    
-    const mockSessions = [];
-    const countries = ['United States', 'United Kingdom', 'Germany', 'Russia', 'China'];
-    const pages = ['/home', '/products', '/pricing', '/demo', '/contact'];
-    
-    for (let i = 0; i < 50; i++) {
-        mockSessions.push({
-            timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-            session_id: `sess_${Math.random().toString(36).substring(7)}`,
-            ip_address: `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
-            user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            page_url: pages[Math.floor(Math.random() * pages.length)],
-            time_on_page: Math.floor(Math.random() * 300),
-            clicks: Math.floor(Math.random() * 20),
-            form_submitted: Math.random() > 0.8,
-            referrer: 'https://www.google.com/search',
-            country: countries[Math.floor(Math.random() * countries.length)],
-            device_type: ['Desktop', 'Mobile', 'Tablet'][Math.floor(Math.random() * 3)]
-        });
-    }
-    
-    return mockSessions;
 }
 
 // Start the dashboard when page loads
