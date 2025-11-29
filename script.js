@@ -29,7 +29,7 @@ async function fetchTrafficData() {
         
         // CSV fetch and parse
         const response = await fetch(CONFIG.DATA_URL);
-        console.log('response', response)
+        console.log('my response ', response)
         //const csvText = await response.text();
         // Parse CSV into array of objects with proper column names
         
