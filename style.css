@@ -6,7 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #7a5288 0%, #96809d 100%);
     min-height: 100vh;
     padding: 20px;
 }
@@ -22,7 +22,7 @@ body {
 
 /* Header */
 header {
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #34163e 0%, #482554 100%);
     color: white;
     padding: 30px 40px;
     display: flex;
@@ -32,27 +32,55 @@ header {
 
 .logo h1 {
     font-size: 28px;
+    font-weight: 900;
+    font-style: italic;
     margin-bottom: 5px;
+    color: #fe0072;
+}
+
+.logo-white {
+    color:#fff;
+    font-style: normal;
+    font-size: 20px;
+    font-weight: 800;
 }
 
 .logo p {
+    margin-left: 35px;
     font-size: 14px;
     opacity: 0.9;
 }
 
 .btn-primary {
-    background: white;
-    color: #1e3a8a;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
+    --btn-bg: #fe0072;
+    --btn-fz: 1rem;
+    --btn-height: 2em;
+    font-style: normal;
+    padding-left: 1.6875em;
+    padding-right: 1.6875em;
+
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    border-radius: 3.2rem;
+    font-size: 12px;
+    outline: 0;
+    padding: var(--btn-pd);
+    height: var(--btn-height);
+    color: var(--btn-color);
+    background: var(--btn-bg);
+    border: 0.1rem solid var(--btn-bg);
+    column-gap: 2.6rem;
+    font-family: var(--f-demi);
+    font-style: normal;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
+    padding: 0px 12px 0px 12px;
 }
 
+
+
 .btn-primary:hover {
-    transform: translateY(-2px);
+    transform: translateY(+1px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
@@ -68,7 +96,7 @@ header {
     background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
     padding: 24px;
     border-radius: 10px;
-    border-left: 4px solid #3b82f6;
+    border-left: 4px solid #34163e;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
@@ -82,7 +110,7 @@ header {
 .metric-value {
     font-size: 32px;
     font-weight: 700;
-    color: #1e3a8a;
+    color: #34163e;
 }
 
 /* Filters */
@@ -101,7 +129,7 @@ header {
 
 .filter-group label {
     font-weight: 600;
-    color: #374151;
+    color: #34163e;
 }
 
 .filter-group select {
@@ -115,7 +143,7 @@ header {
 
 .filter-group select:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: #34163e;
 }
 
 /* Charts */
@@ -133,8 +161,15 @@ header {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
+.line-chart {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    padding: 0 40px 40px 40px;
+}
+
 .chart-container h3 {
-    color: #1e3a8a;
+    color: #34163e;
     margin-bottom: 20px;
     font-size: 18px;
 }
@@ -145,7 +180,7 @@ header {
 }
 
 .table-section h3 {
-    color: #1e3a8a;
+    color: #34163e;
     margin-bottom: 20px;
     font-size: 20px;
 }
@@ -163,7 +198,7 @@ table {
 }
 
 thead {
-    background: #1e3a8a;
+    background: #7a5288;
     color: white;
 }
 

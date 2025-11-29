@@ -14,11 +14,11 @@
         <!-- Header -->
         <header>
             <div class="logo">
-                <h1>🛡️ CHEQ Traffic Quality Dashboard</h1>
+                <h1>🛡️ CHEQ <span class="logo-white">Traffic Quality Dashboard</span></h1>
                 <p>Bot Detection & Fraud Analysis</p>
             </div>
             <div class="header-actions">
-                <button id="refreshBtn" class="btn-primary">🔄 Refresh Data</button>
+                <button id="refreshBtn" class="btn-primary">Refresh Data</button>
             </div>
         </header>
 
@@ -70,6 +70,13 @@
             <div class="chart-container">
                 <h3>Device Distribution</h3>
                 <canvas id="deviceChart"></canvas>
+            </div>
+        </section>
+
+        <section class="line-chart">
+            <div class="chart-container">
+                <h3>Traffic Over Time</h3>
+                <canvas id="lineChart"></canvas>
             </div>
         </section>
 

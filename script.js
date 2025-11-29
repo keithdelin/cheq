@@ -1,4 +1,5 @@
 /*** CHEQ Traffic Quality Dashboard */
+/*** basic javascript kdelin version */
 
 // Configuration
 const CONFIG = {
@@ -7,11 +8,11 @@ const CONFIG = {
     DATA_URL: 'assets/sample-traffic-data.csv',
 };
 
-// State
 let trafficData;
 let filteredData = [];
 let countryChart = null;
 let deviceChart = null;
+let lineChart = null;
 
 const botUserAgents = [
     "curl",
@@ -47,24 +48,28 @@ const MEDIUM_RISK_COUNTRIES = [
     "South Africa"
     ];
 
-/** Fetch and return csv data using PapaParse */
+// =====================================================
+//   Fetch and return csv data using PapaParse
+// =====================================================
+
 async function fetchTrafficData() {
     try {
+
         console.log("Fetching traffic data from CSV from " + CONFIG.DATA_URL);
 
         return new Promise((resolve, reject) => {
-        Papa.parse(CONFIG.DATA_URL, {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
-            complete: function (results) {
-                resolve(results.data);   // <-- THIS RETURNS TO await fetchTrafficData()
-            },
-            error: function (err) {
-                console.error("PapaParse error:", err);
-                reject(err);
-            },
-        });
+            Papa.parse(CONFIG.DATA_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function (results) {
+                    resolve(results.data);   // <-- THIS RETURNS TO await fetchTrafficData()
+                },
+                error: function (err) {
+                    console.error("PapaParse error:", err);
+                    reject(err);
+                },
+            });
         });
         
     } catch (error) {
@@ -74,19 +79,12 @@ async function fetchTrafficData() {
     }
 }
 
-/**
- * TODO: Implement fraud detection logic
- * Analyze each session and assign risk scores
- * 
- * High-Risk Indicators:
- * - 0 seconds on page but form submitted
- * - >10 page views from same IP in <60 seconds
- * - Suspicious user agents (bots, scrapers)
- * - High click rate (>50 clicks/minute)
- * - High-risk countries
- * 
- * Return object with: { riskScore: 0-100, classification: 'clean'|'suspicious'|'bot', flags: [] }
- */
+
+// ===============================================================================================
+// Analyze each session and assign risk scores
+// Return object with: { riskScore: 0-100, classification: 'clean'|'suspicious'|'bot', flags: [] }
+// ===============================================================================================
+
 function analyzeSession(session, ipData) {
     let riskScore = 0;
     const flags = [];
@@ -121,7 +119,6 @@ function analyzeSession(session, ipData) {
         flags.push(`High frequency: ${countInWindow} pageviews from IP ${ip} within 60s`);
     }
     
-
     // Rule 3: Suspicious user agents (bots, scrapers)
     const ua = session.user_agent.toLowerCase();
     
@@ -138,7 +135,7 @@ function analyzeSession(session, ipData) {
         flags.push("High Click Rate");
     }
 
-    // Rule 5: High-risk countries
+    // Rule 5: High/Med-risk countries
     const country = (session.country || "").trim();
 
     if (HIGH_RISK_COUNTRIES.includes(country)) {
@@ -169,7 +166,9 @@ function analyzeSession(session, ipData) {
     return { riskScore, classification, flags };
 }
 
-/** Process raw data and add risk analysis  */
+// =====================================================
+//   Process raw data and add risk analysis
+// =====================================================
 
 function processData(rawData) {
     // Build a map: ip_address -> [list of timestamps in ms]
@@ -198,9 +197,11 @@ function processData(rawData) {
     });
     }
 
-/**
- * TODO: Update dashboard metrics
- */
+
+// =====================================================
+//   Update dashboard metrics
+// =====================================================
+
 function updateMetrics(data) {
     const totalSessions = data.length;
     const botSessions = data.filter(s => s.classification === 'bot').length;
@@ -214,9 +215,10 @@ function updateMetrics(data) {
     document.getElementById('cleanForms').textContent = cleanForms;
 }
 
-/**
- * TODO: Update high-risk sessions table
- */
+// =====================================================
+//   Update high-risk sessions table
+// =====================================================
+
 function updateTable(data) {
     const tbody = document.querySelector('#riskTable tbody');
     
@@ -243,105 +245,149 @@ function updateTable(data) {
     `).join('');
 }
 
-/**
- * TODO: Create charts using Chart.js or similar library
- * You'll need to include Chart.js in index.html first
- */
+// =====================================================
+//   Render Bar, Pie, and Line Chart  
+// =====================================================
+
 function updateCharts(data) {
-    // TODO: Implement chart rendering
-    // - Bar chart: Traffic by Country
-    // - Pie chart: Device distribution
-    // - Consider adding: Line chart for traffic over time
-    
-    console.log('Charts would render here with Chart.js');
+
+    console.log('Render Charts!');
 
     let countryCount = getCountryCount(data);
     let deviceCount = getDeviceCount(data);
+    
     let c_labels = Object.keys(countryCount);
     let c_values = Object.values(countryCount);
-    let d_labels = Object.keys(deviceCount);    // e.g. ["Desktop", "Mobile", "Tablet"]
-    let d_values = Object.values(deviceCount);  // e.g. [120, 80, 15]
+    let d_labels = Object.keys(deviceCount);
+    let d_values = Object.values(deviceCount);
+    let { labels: t_labels, values: t_values } = getTrafficOverTime(data);
+    
+    // Get Element
     let ctx_country = document.getElementById('countryChart').getContext('2d');
     let ctx_device = document.getElementById('deviceChart').getContext('2d');
-
+    let ctx_time = document.getElementById('lineChart').getContext('2d');
+    
     // Destroy any old charts first
     if (countryChart) { countryChart.destroy(); }
     if (deviceChart) { deviceChart.destroy(); }
+    if (lineChart) { lineChart.destroy(); }
 
-    // Pie Chart
+    // =====================================================
+    //   Render Bar Chart: Traffic By Country
+    // =====================================================
 
-  countryChart = new Chart(ctx_country, {
-    type: 'bar',
-    data: {
-      labels: c_labels,
-      datasets: [{
-        label: 'Traffic by Country',
-        data: c_values,
-        backgroundColor: '#4e79a7',
-        borderColor: '#2f4b7c',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          //text: 'Traffic by Country'
-        }
-      },
-      scales: {
-        x: {
-          title: { display: true, text: 'Country' },
-          ticks: { autoSkip: false }
+    countryChart = new Chart(ctx_country, {
+        type: 'bar',
+        data: {
+        labels: c_labels,
+        datasets: [{
+                label: 'Traffic by Country',
+                data: c_values,
+                backgroundColor: '#fe0072',
+                borderColor: '#fe0072',
+                borderWidth: 1
+            }]
         },
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: 'Sessions' }
+        options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            title: {
+                display: true,
+            }
+        },
+        scales: {
+            x: {
+                title: { display: true, text: 'Country' },
+                ticks: { autoSkip: false }
+            },
+            y: {
+                beginAtZero: true,
+                title: { display: true, text: 'Sessions' }
+            }
         }
-      }
-    }
-  });
-
-  // =====================================================
-  //   Render Pie Chart: Device Distribution
-  // =====================================================
-
-  deviceChart = new Chart(ctx_device, {
-    type: 'pie',
-    data: {
-      labels: d_labels,
-      datasets: [{
-        label: 'Device Distribution',
-        data: d_values,
-        backgroundColor: [
-          '#4e79a7',
-          '#f28e2b',
-          '#e15759',
-          '#76b7b2',
-          '#59a14f',
-          '#edc949'
-        ]
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'right' },
-        title: {
-          display: true,
-          //text: 'Device Distribution'
         }
-      }
-    }
-  });  
+    });
+
+    // =====================================================
+    //   Render Pie Chart: Device Distribution
+    // =====================================================
+
+    deviceChart = new Chart(ctx_device, {
+        type: 'pie',
+        data: {
+        labels: d_labels,
+        datasets: [{
+                label: 'Device Distribution',
+                data: d_values,
+                backgroundColor: [
+                '#fe0072',
+                '#34163e',
+                '#7a5288',
+                '#76b7b2',
+                '#59a14f',
+                '#edc949'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'right' },
+                title: {
+                    display: true,
+                }
+            }
+        }
+    }); 
+    
+    // =====================================================
+    //   Render Line Chart: Traffic Over Time
+    // =====================================================
+
+    lineChart = new Chart(ctx_time, {
+        type: 'line',
+        data: {
+        labels: t_labels,
+        datasets: [{
+                label: 'Sessions per Day',
+                data: t_values,
+                fill: true,
+                backgroundColor: 'rgba(122, 82, 136, 0.25)',
+                tension: 0.2,
+                borderWidth: 3,
+                borderColor: '#7a5288',
+                pointBackgroundColor: '#7a5288',
+                pointBorderColor: '#7a5288' 
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Traffic Over Time'
+                }
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: 'Date' }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Sessions' }
+                }
+            }
+        }
+    });
     
 }
 
-/**
- * TODO: Apply filters
- */
+// =====================================================
+//   Apply Filters When Updating Dropdowns 
+// =====================================================
+
 function applyFilters() {
     const riskFilter = document.getElementById('riskFilter').value;
     const countryFilter = document.getElementById('countryFilter').value;
@@ -357,12 +403,18 @@ function applyFilters() {
     updateCharts(filteredData);
 }
 
-/**
- * TODO: Populate country filter dropdown
- */
+// =====================================================
+//   Create Filter Dropdown Menus
+// =====================================================
+
 function populateFilters(data) {
     const countries = [...new Set(data.map(s => s.country))].sort();
     const countrySelect = document.getElementById('countryFilter');
+
+    // Remove any existing options before adding new (fix for refresh)
+    while (countrySelect.options.length > 1) {
+        countrySelect.remove(1);
+    }
     
     countries.forEach(country => {
         const option = document.createElement('option');
@@ -372,7 +424,10 @@ function populateFilters(data) {
     });
 }
 
-// Get Country Count for Pie Chart
+// =====================================================
+//   Get Country Count for Pie Chart
+// =====================================================
+
 function getCountryCount(data) {
   const countryCount = {};
 
@@ -387,7 +442,10 @@ function getCountryCount(data) {
   return countryCount;
 }
 
-// Get Devices for Bar Chart
+// =====================================================
+//   Get Devices for Bar Chart
+// =====================================================
+
 function getDeviceCount(data) {
   const deviceCount = {};
 
@@ -402,9 +460,38 @@ function getDeviceCount(data) {
   return deviceCount;
 }
 
-/**
- * Initialize dashboard
- */
+// =====================================================
+//   Get Sessions per Date
+// =====================================================
+
+function getTrafficOverTime(data) {
+
+    const countsByDay = {};
+    
+    // loop through sessions and count sessions by day
+    data.forEach(session => {
+        const d = new Date(session.timestamp);
+        // Bucket by calendar day (YYYY-MM-DD)
+        const key = d.toISOString().slice(0, 10);
+
+        if (!countsByDay[key]) {
+            countsByDay[key] = 0;
+        }
+        countsByDay[key]++;
+        });
+
+        // Sort by date
+        const labels = Object.keys(countsByDay).sort();
+        const values = labels.map(day => countsByDay[day]);
+
+        return { labels, values };
+}
+
+
+// =====================================================
+//   Initialize dashboard
+// =====================================================
+
 async function initDashboard() {
     console.log('Initializing CHEQ Traffic Quality Dashboard...');
     
