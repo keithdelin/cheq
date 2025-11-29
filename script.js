@@ -8,7 +8,7 @@ const CONFIG = {
 };
 
 // State
-let trafficData = [];
+let trafficData;
 let filteredData = [];
 let countryChart = null;
 let deviceChart = null;
